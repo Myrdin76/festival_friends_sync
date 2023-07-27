@@ -4,11 +4,14 @@
     <div class="container">
         <h1>Artist Timetable</h1>
 
-        <a hx-get="/fill_table" hx-trigger="click" hx-target="#artist_timetable" hx-swap="innerHTML"><button type="button"
-                class="btn btn-secondary">Laat me die tabel zien!</button></a>
-
-        <div id="artist_timetable">
-        </div>
+        <div class="form-group">
+            <label for="stage-selector">Stage:</label>
+            <select class="form-control" id="stage-selector" hx-get="/fill_table" name="stageselector" hx-target="#artist_timetable" hx-swap="innerHTML" hx-trigger="load, change">
+                {% for stage in stages %}
+                <option value="{{ stage }}">{{ stage }}</option>
+                {% endfor %}
+            </select>
+        <div id="artist_timetable"> </div>
     </div>
 
 </body>
