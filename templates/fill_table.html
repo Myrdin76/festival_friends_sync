@@ -1,0 +1,21 @@
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Artist</th>
+            <th scope="col">Stage</th>
+            <th scope="col">Start</th>
+            <th scope="col">Eind</th>
+        </tr>
+    </thead>
+    <tbody id="artist_data">
+        {% for artist in data %}
+        <tr>
+            <td>{{ artist.name }}</td>
+            <td>{{ artist.stage }}</td>
+            <td>{{ artist.startdate }}</td>
+            <td>{{ artist.enddate }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+

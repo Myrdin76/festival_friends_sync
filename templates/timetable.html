@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block content %}
+
+<body>
+    <div class="container">
+        <h1>Artist Timetable</h1>
+
+        <a hx-get="/fill_table" hx-trigger="click" hx-target="#artist_timetable" hx-swap="innerHTML"><button type="button"
+                class="btn btn-secondary">Laat me die tabel zien!</button></a>
+
+        <div id="artist_timetable">
+        </div>
+    </div>
+
+</body>
+
+
+{% endblock %}
