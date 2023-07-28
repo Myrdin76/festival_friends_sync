@@ -10,3 +10,4 @@ flask-session
 flask-cors
 email_validator
 psycopg2
+PyJWT==2.8.0
