@@ -9,5 +9,8 @@ python-dotenv
 flask-session
 flask-cors
 email_validator
+sqlalchemy
 psycopg2
 PyJWT==2.8.0
+pytest
+bootstrap-flask

@@ -12,12 +12,12 @@
         {% for artist in data %}
         <tr>
             <td>
-                <input id="{{ artist.id }}"
+                <input id="{{ artist.artist_id }}"
                 type="checkbox"
-                name="{{ artist.id }}"
+                name="{{ artist.artist_id }}"
                 hx-get="/api/select_artist"
-                hx-include="[name='{{ artist.id }}']"/>
-                <input type="hidden" name="{{ artist.id }}" value="off"/>
+                hx-include="[name='{{ artist.artist_id }}']"/>
+                <input type="hidden" name="{{ artist.artist_id }}" value="off"/>
             </td>
             <td>{{ artist.name }}</td>
             <td>{{ artist.stage }}</td>

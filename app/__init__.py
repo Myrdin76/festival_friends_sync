@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_session import Session
 from flask_wtf import CSRFProtect
+from flask_bootstrap import Bootstrap5
 
 from config import Config
 
@@ -16,6 +17,7 @@ session = Session()
 db = SQLAlchemy()
 migrate = Migrate()
 csrf = CSRFProtect()
+bootstrap = Bootstrap5()
 # csrf._exempt_views.add('dash.dash.dispatch')
 
 lm = LoginManager()
@@ -31,6 +33,7 @@ session.init_app(app)
 lm.init_app(app)
 db.init_app(app)
 migrate.init_app(app, db)
+bootstrap.init_app(app)
 csrf.init_app(app)
 
 from app import models, views, api

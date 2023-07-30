@@ -1,0 +1,58 @@
+{% extends "base.html" %} {% block content %}
+
+<body>
+
+    <div class="container">
+        <h1>Lowlands 2023</h1>
+        <h3>Join groups</h3>
+
+        <div class="form-group">
+            <label for="group-selector">Join group</label>
+            <select class="form-select" id="group-selector" name="groupselector">
+                {% for group in groups %}
+                <option value="{{ group.group_id }}">{{ group.group_name }}</option>
+                {% endfor %}
+            </select>
+            <br>
+
+            <div class="btn-group" role="group" aria-label="Group actions">
+                <a hx-include="[name='groupselector']" hx-get="/api/join_group" hx-target="#memberofgroups" hx-swap="innerHTML"
+                    class="btn btn-primary">Join</a>
+                <a hx-include="[name='groupselector']" hx-get="/api/leave_group" hx-target="#memberofgroups" hx-swap="innerHTML"
+                    class="btn btn-secondary">Leave</a>
+            </div>
+        </div>
+
+
+        <br>
+        <br>
+        <br>
+
+        <h3> Member of groups:</h3>
+        <div id="memberofgroups">
+            <ul>
+                {% for group in membergroups %}
+                <li>{{ group.group_name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <br>
+        <br>
+        <br>
+
+        <!-- <h3>Create a group</h3>
+        <div class="form-group" >
+            <label for="group-creator">Join group</label>
+            <input type="text" class="form-control" id="group-creator" name="groupcreator" placeholder="Group name">
+          <br>
+          <a hx-include="[name='groupselector']" hx-get="/api/create_group" hx-target="#result" hx-swap="outerHTML" class="btn btn-primary">Join</a>
+          </div>
+          
+          <div id="result"></div> -->
+
+
+    </div>
+</body>
+
+{% endblock %}

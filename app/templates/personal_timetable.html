@@ -1,0 +1,36 @@
+{% extends "base.html" %} {% block content %}
+
+<body>
+    <h1>Personal Timetable</h1>
+
+
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Artist</th>
+                <th scope="col">Stage</th>
+                <th scope="col">Dag</th>
+                <th scope="col">Start</th>
+                <th scope="col">Eind</th>
+                <th scope="col">Similarly minded partners</th>
+            </tr>
+        </thead>
+        <tbody id="artist_data">
+            {% for artist in data %}
+            <tr>
+                <td>{{ artist.name }}</td>
+                <td>{{ artist.stage }}</td>
+                <td>{{ artist.day }}</td>
+                <td>{{ artist.starttime }}</td>
+                <td>{{ artist.endtime }}</td>
+                <td>
+                    <div hx-get="/api/get_friends" hx-trigger="load" hx-swap="innerHTML">
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+{% endblock %}
