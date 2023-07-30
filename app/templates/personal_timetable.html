@@ -24,8 +24,10 @@
                 <td>{{ artist.starttime }}</td>
                 <td>{{ artist.endtime }}</td>
                 <td>
-                    <div hx-get="/api/get_friends" hx-trigger="load" hx-swap="innerHTML">
-                    </div>
+                    <lu>
+                        <li>Friend 1</li>
+                        <li>Friend 2</li>
+                    </lu>
                 </td>
             </tr>
             {% endfor %}
