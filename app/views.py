@@ -44,8 +44,9 @@ def index():
 def lineup():
     return render_template("lineup.html")
 
-@login_required
+
 @app.route("/groups", methods=['GET', 'POST'])
+@login_required
 def groups():
 
     groups = Group.query.all()
@@ -53,8 +54,9 @@ def groups():
     
     return render_template("groups.html", groups=groups, membergroups=membergroups)
 
-@login_required
+
 @app.route("/personal_timetable")
+@login_required
 def personal_timetable():
     data = current_user.get_all_artists_ordered()
  
