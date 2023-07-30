@@ -7,17 +7,7 @@ data = pd.read_csv('app/lowlands_schema.csv')
 data['id'] = data.index
 stages = data['stage'].unique().tolist()
 
-@app.route('/index')
-def index():
-    return render_template('index.html')
-
-
-@app.route('/')
-def timetable():
-    return render_template('timetable.html', stages=stages)
-
-
-@app.route('/fill_table')
+@app.route('/api/fill_table')
 def fill_table():
     global data
     stage = request.args.get('stageselector')
@@ -29,7 +19,7 @@ def fill_table():
         
     return render_template('fill_table.html', data=ndata)
 
-@app.get('/select_artist')
+@app.get('/api/select_artist')
 def select_artist():
     res = request.args
     print(res)

@@ -15,7 +15,7 @@
                 <input id="{{ artist.id }}"
                 type="checkbox"
                 name="{{ artist.id }}"
-                hx-get="/select_artist"
+                hx-get="/api/select_artist"
                 hx-include="[name='{{ artist.id }}']"/>
                 <input type="hidden" name="{{ artist.id }}" value="off"/>
             </td>

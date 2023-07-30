@@ -33,4 +33,4 @@ db.init_app(app)
 migrate.init_app(app, db)
 csrf.init_app(app)
 
-from app import routes, models
+from app import models, views, api

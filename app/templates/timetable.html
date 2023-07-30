@@ -6,7 +6,7 @@
 
         <div class="form-group">
             <label for="stage-selector">Stage:</label>
-            <select class="form-control" id="stage-selector" hx-get="/fill_table" name="stageselector" hx-target="#artist_timetable" hx-swap="innerHTML" hx-trigger="load, change">
+            <select class="form-control" id="stage-selector" hx-get="/api/fill_table" name="stageselector" hx-target="#artist_timetable" hx-swap="innerHTML" hx-trigger="load, change">
                 {% for stage in stages %}
                 <option value="{{ stage }}">{{ stage }}</option>
                 {% endfor %}
