@@ -43,7 +43,7 @@ def select_artist():
     return ""
 
 
-# @login_required
+@login_required
 @app.route('/api/join_group', methods=['GET', 'POST'])
 def join_group():
     gid = request.args.get('groupselector')

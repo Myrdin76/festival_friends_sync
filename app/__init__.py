@@ -22,7 +22,7 @@ bootstrap = Bootstrap5()
 
 lm = LoginManager()
 lm.session_protection = "strong"
-lm.login_view = "auth.login"
+lm.login_view = "login"
 lm.login_message_category = "debug"
 
 app.config["SESSION_PERMANENT"] = False

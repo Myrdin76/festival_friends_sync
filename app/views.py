@@ -44,7 +44,7 @@ def index():
 def lineup():
     return render_template("lineup.html")
 
-
+@login_required
 @app.route("/groups", methods=['GET', 'POST'])
 def groups():
 
@@ -53,6 +53,7 @@ def groups():
     
     return render_template("groups.html", groups=groups, membergroups=membergroups)
 
+@login_required
 @app.route("/personal_timetable")
 def personal_timetable():
     data = current_user.get_all_artists_ordered()
