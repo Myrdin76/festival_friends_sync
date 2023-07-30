@@ -56,6 +56,7 @@ def groups():
 @app.route("/personal_timetable")
 def personal_timetable():
     data = current_user.get_all_artists_ordered()
+ 
     return render_template("personal_timetable.html", data=data)
 
 

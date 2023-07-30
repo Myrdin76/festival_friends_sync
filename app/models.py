@@ -44,10 +44,14 @@ class User(UserMixin, db.Model):
         res = db.session.query(Artist).filter(Artist.artist_id.in_([art.artist_id for art in self.artists])).order_by(Artist.startdate).all()
         return res
     
-    def get_friends(self):
-        friends = User.query.filter(User.groups.in_(self.groups)).all()
+    def get_friends(self, group_id):
+        friends = db.session.query(User).filter(User.user_id.in_([user.user_id for user in Group.query.get(group_id).group])).all()
         return friends
-
+    
+    def get_friends_artists(self, group_id):
+        friends = self.get_friends(group_id)
+        return {friend.username: db.session.query(Artist).filter(Artist.artist_id.in_([art.artist_id for art in friend.artists])).all() for friend in friends}
+        
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
