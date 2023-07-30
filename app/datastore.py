@@ -12,13 +12,22 @@ class ArtistStore():
         return self.data
     
     def get_stages(self):
-        rows = Artist.query.filter_by(festival=self.festival).distinct(Artist.stage).distinct()
-        return [row.stage for row in rows]
+        try:
+            rows = Artist.query.filter_by(festival=self.festival).distinct(Artist.stage).distinct()
+            return [row.stage for row in rows]
+        except:
+            return []
             
     def get_artists(self):
-        rows = Artist.query.filter_by(festival=self.festival).distinct(Artist.name).distinct()
-        return [row.name for row in rows]
+        try:
+            rows = Artist.query.filter_by(festival=self.festival).distinct(Artist.name).distinct()
+            return [row.name for row in rows]
+        except:
+            return []
     
     def get_days(self):
-        rows = Artist.query.filter_by(festival=self.festival).distinct(Artist.day).distinct()
-        return [row.day for row in rows]
+        try:
+            rows = Artist.query.filter_by(festival=self.festival).distinct(Artist.day).distinct()
+            return [row.day for row in rows]
+        except:
+            return []
