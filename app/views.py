@@ -16,7 +16,6 @@ from app import app, db
 from app.models import User, Artist, Group, user_to_group
 from app.datastore import ArtistStore
 
-# asd = ArtistStore("Lowlands")
 @app.context_processor
 def inject_global_params():
     """inject parameters globally
@@ -24,7 +23,6 @@ def inject_global_params():
     Returns:
         dict: contains parameters that can be used across all html templates
     """
-
     asd = ArtistStore("Lowlands")
     artists = ["All"] + asd.get_artists()
     stages = ["All"] + asd.get_stages()
@@ -47,7 +45,6 @@ def lineup():
 @app.route("/groups", methods=['GET', 'POST'])
 @login_required
 def groups():
-
     groups = Group.query.all()
     membergroups = {group.group_name: [user for user in current_user.get_friends(group.group_id)] for group in current_user.groups}
     print(membergroups)
@@ -102,31 +99,5 @@ def register():
 
 @app.route("/testpage")
 def testpage():
-
-
-
-    def get_artists_and_users_for_group(group_id):
-        # Get the users who are part of the specified group
-        users_in_group = User.query.filter(User.groups.any(group_id=group_id)).all()
-        print("users_in_group", users_in_group)
-        users_in_group = [user for user in users_in_group if user.username != current_user.username]
-
-        # Create a dictionary to store artists and their corresponding users
-        artists_and_users = {}
-
-        # Loop through all artists
-        res = current_user.get_all_artists_ordered()
-        for i in range(0,len(res)):
-            # Get the users who are part of the specified group and are going to this artist
-            users_going_to_artist = [
-                user for user in users_in_group if res[i] in user.artists
-            ]
-            setattr(res[i], "friendsgoing", [user.username for user in users_going_to_artist])
-                
-        return res
-    
-    res = get_artists_and_users_for_group(1)
-    print(res)
-    print(res[0].friendsgoing)
-
-    return render_template("testpage.html", data=res)
+    # tst
+    return render_template("testpage.html")
