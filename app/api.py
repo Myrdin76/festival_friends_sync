@@ -57,7 +57,7 @@ def join_group():
     
     current_user.add_user_to_group(group)
     
-    membergroups = current_user.groups
+    membergroups = {group.group_name: [user for user in current_user.get_friends(group.group_id)] for group in current_user.groups}
     
     return render_template('api_list_of_groups.html', membergroups=membergroups)
 
@@ -70,7 +70,7 @@ def leave_group():
     
     current_user.remove_user_from_group(group)
     
-    membergroups = current_user.groups
+    membergroups = {group.group_name: [user for user in current_user.get_friends(group.group_id)] for group in current_user.groups}
     
     return render_template('api_list_of_groups.html', membergroups=membergroups)
 
