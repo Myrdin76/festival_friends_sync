@@ -2,35 +2,27 @@
 
 <body>
     <h1>Personal Timetable</h1>
-
-
     <table class="table table-striped table-hover">
         <thead>
             <tr>
+                <th scope="col">Remove</th>
                 <th scope="col">Artist</th>
                 <th scope="col">Stage</th>
                 <th scope="col">Dag</th>
                 <th scope="col">Start</th>
                 <th scope="col">Eind</th>
-                <th scope="col">Similarly minded partners</th>
+                <th scope="col">
+                    <label for="group-selector">Similarly minded partners</label>
+                    <select class="form-select" id="group-selector" name="groupselector" hx-get="/api/fill_personal" hx-target="#artist_data" hx-swap="innerHTML" hx-trigger="load, change">
+                        {% for group in current_user.groups %}
+                        <option value="{{ group.group_id }}">{{ group.group_name }}</option>
+                        {% endfor %}
+                    </select>
+                </th>
             </tr>
         </thead>
         <tbody id="artist_data">
-            {% for artist in data %}
-            <tr>
-                <td>{{ artist.name }}</td>
-                <td>{{ artist.stage }}</td>
-                <td>{{ artist.day }}</td>
-                <td>{{ artist.starttime }}</td>
-                <td>{{ artist.endtime }}</td>
-                <td>
-                    <lu>
-                        <li>Friend 1</li>
-                        <li>Friend 2</li>
-                    </lu>
-                </td>
-            </tr>
-            {% endfor %}
+
         </tbody>
     </table>
 </body>

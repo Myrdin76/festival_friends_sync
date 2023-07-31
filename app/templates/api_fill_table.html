@@ -1,7 +1,11 @@
 <table class="table table-striped table-hover">
     <thead>
         <tr>
+            {% if current_user.is_authenticated %}
             <th scope="col">Wil ik zien!</th>
+            {% else %}
+            <th scope="col">Login om te selecteren!</th>
+            {% endif %}
             <th scope="col">Artist</th>
             <th scope="col">Stage</th>
             <th scope="col">Start</th>
@@ -16,7 +20,11 @@
                 type="checkbox"
                 name="{{ artist.artist_id }}"
                 hx-get="/api/select_artist"
-                hx-include="[name='{{ artist.artist_id }}']"/>
+                hx-include="[name='{{ artist.artist_id }}']"
+                {% if not current_user.is_authenticated %}
+                disabled 
+                {% endif %}
+                />
                 <input type="hidden" name="{{ artist.artist_id }}" value="off"/>
             </td>
             <td>{{ artist.name }}</td>

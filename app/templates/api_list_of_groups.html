@@ -1,5 +1,14 @@
-<ul> 
+<ul>
     {% for group in membergroups %}
-    <li>{{ group.group_name }}</li>
+    <li>{{ group }}</li>
+    <ul>
+        
+            {% for member in membergroups[group] %}
+            <li>
+            {{ member.username }}
+        </li>
+            {% endfor %}
+        
+    </ul>
     {% endfor %}
 </ul>

@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, redirect, url_for
 from flask_login import login_required, current_user
 import pandas as pd
 
@@ -21,13 +21,17 @@ def fill_table():
         
     return render_template('api_fill_table.html', data=data)
 
-
+@app.route('/api/delete_artist/<int:artist_id>', methods=['GET', 'POST'])
 @login_required
+def delete_artist(artist_id):
+    current_user.remove_user_from_artist(Artist.query.get(int(artist_id)))
+    return ""
+
+
 @app.get('/api/select_artist')
-def select_artist():
-    
+@login_required
+def select_artist():    
     res = request.args.lists()
-    
     # Access all values in the ImmutableMultiDict
     for key, value_list in res:
         artist_id = key
@@ -43,8 +47,9 @@ def select_artist():
     return ""
 
 
-@login_required
+
 @app.route('/api/join_group', methods=['GET', 'POST'])
+@login_required
 def join_group():
     gid = request.args.get('groupselector')
     print(gid)
@@ -78,6 +83,27 @@ def get_friends():
     return render_template('api_list_of_friends.html', group=group)
 
 
-@app.route('/api/test')
+@app.route('/api/fill_personal')
+def fill_personal():
+    group_id = request.args.get('groupselector')
+    
+    # Get the users who are part of the specified group
+    users_in_group = User.query.filter(User.groups.any(group_id=group_id)).all()
+    users_in_group = [user for user in users_in_group if user.username != current_user.username]
+
+    # Loop through all artists
+    res = current_user.get_all_artists_ordered()
+    for i in range(0,len(res)):
+        # Get the users who are part of the specified group and are going to this artist
+        users_going_to_artist = [
+            user for user in users_in_group if res[i] in user.artists
+        ]
+        setattr(res[i], "friendsgoing", [user.username for user in users_going_to_artist])
+    
+    return render_template('api_fill_personal.html', data=res)
+
+
+@app.route('/api/test', methods=['POST'])
 def api_test():
-    return "Here I am!"
+    txt = request.form.get('T1')
+    return f"<p> {txt} </p>"

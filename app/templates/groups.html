@@ -32,7 +32,16 @@
         <div id="memberofgroups">
             <ul>
                 {% for group in membergroups %}
-                <li>{{ group.group_name }}</li>
+                <li>{{ group }}</li>
+                <ul>
+                    
+                        {% for member in membergroups[group] %}
+                        <li>
+                        {{ member.username }}
+                    </li>
+                        {% endfor %}
+                    
+                </ul>
                 {% endfor %}
             </ul>
         </div>
@@ -41,6 +50,8 @@
         <br>
         <br>
 
+        <h3> Create a group</h3>
+        <p> t.b.d. </p>
         <!-- <h3>Create a group</h3>
         <div class="form-group" >
             <label for="group-creator">Join group</label>

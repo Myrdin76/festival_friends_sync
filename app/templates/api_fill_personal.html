@@ -1,0 +1,17 @@
+{% for artist in data %}
+<tr id="row_{{artist.artist_id}}">
+    <td><a id="{{ artist.artist_id }}" hx-get="/api/delete_artist/{{ artist.artist_id }}" hx-target="#row_{{artist.artist_id}}" hx-swap="outerHTML"><i class="bi bi-x-lg"></i></a></td>
+    <td>{{ artist.name }}</td>
+    <td>{{ artist.stage }}</td>
+    <td>{{ artist.day }}</td>
+    <td>{{ artist.starttime }}</td>
+    <td>{{ artist.endtime }}</td>
+    <td>
+        <lu>
+            {% for friend in artist.friendsgoing %}
+            <li> {{friend}} </li>
+            {% endfor %}
+        </lu>
+    </td>
+</tr>
+{% endfor %}

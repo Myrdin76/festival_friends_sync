@@ -1,5 +1,6 @@
 from flask import render_template, request
 import pandas as pd
+from sqlalchemy.orm import joinedload, lazyload, aliased
 
 from flask import render_template, redirect, url_for, flash, request, abort
 from werkzeug.urls import url_parse
@@ -12,26 +13,24 @@ from app.forms import (
     ResetPasswordForm,
 )
 from app import app, db
-from app.models import User, Artist, Group
+from app.models import User, Artist, Group, user_to_group
 from app.datastore import ArtistStore
 
 # asd = ArtistStore("Lowlands")
-with app.app_context():
+@app.context_processor
+def inject_global_params():
+    """inject parameters globally
 
-    @app.context_processor
-    def inject_global_params():
-        """inject parameters globally
+    Returns:
+        dict: contains parameters that can be used across all html templates
+    """
 
-        Returns:
-            dict: contains parameters that can be used across all html templates
-        """
+    asd = ArtistStore("Lowlands")
+    artists = ["All"] + asd.get_artists()
+    stages = ["All"] + asd.get_stages()
+    days = ["All"] + asd.get_days()
 
-        asd = ArtistStore("Lowlands")
-        artists = ["All"] + asd.artists
-        stages = ["All"] + asd.stages
-        days = ["All"] + asd.days
-
-        return dict(stages=stages, artists=artists, days=days)
+    return dict(stages=stages, artists=artists, days=days)
 
 
 @app.route("/")
@@ -50,7 +49,8 @@ def lineup():
 def groups():
 
     groups = Group.query.all()
-    membergroups = current_user.groups
+    membergroups = {group.group_name: [user for user in current_user.get_friends(group.group_id)] for group in current_user.groups}
+    print(membergroups)
     
     return render_template("groups.html", groups=groups, membergroups=membergroups)
 
@@ -58,9 +58,7 @@ def groups():
 @app.route("/personal_timetable")
 @login_required
 def personal_timetable():
-    data = current_user.get_all_artists_ordered()
- 
-    return render_template("personal_timetable.html", data=data)
+    return render_template("personal_timetable.html")
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -104,4 +102,31 @@ def register():
 
 @app.route("/testpage")
 def testpage():
-    return render_template("testpage.html")
+
+
+
+    def get_artists_and_users_for_group(group_id):
+        # Get the users who are part of the specified group
+        users_in_group = User.query.filter(User.groups.any(group_id=group_id)).all()
+        print("users_in_group", users_in_group)
+        users_in_group = [user for user in users_in_group if user.username != current_user.username]
+
+        # Create a dictionary to store artists and their corresponding users
+        artists_and_users = {}
+
+        # Loop through all artists
+        res = current_user.get_all_artists_ordered()
+        for i in range(0,len(res)):
+            # Get the users who are part of the specified group and are going to this artist
+            users_going_to_artist = [
+                user for user in users_in_group if res[i] in user.artists
+            ]
+            setattr(res[i], "friendsgoing", [user.username for user in users_going_to_artist])
+                
+        return res
+    
+    res = get_artists_and_users_for_group(1)
+    print(res)
+    print(res[0].friendsgoing)
+
+    return render_template("testpage.html", data=res)
