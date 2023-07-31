@@ -11,10 +11,14 @@ load_dotenv(find_dotenv())
 class Config():
     """Set Flask configuration vars from .env file."""
     
+    ENV = os.environ.get('ENV')
+    
     # General Config
     SECRET_KEY = os.environ.get('SECRET_KEY')
-    FLASK_APP = os.environ.get('FLASK_APP')
-    FLASK_ENV = os.environ.get('FLASK_ENV')
+    FLASK_APP = "app.py"
     
-    # Database
-    SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
+    if ENV == 'dev':
+        SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
+    else:
+        HEROKU_DB_URL = os.environ.get("DATABASE_URL")
+        SQLALCHEMY_DATABASE_URI = HEROKU_DB_URL.replace("postgres://", "postgresql://")
