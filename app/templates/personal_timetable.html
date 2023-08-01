@@ -12,8 +12,9 @@
                 <th scope="col">Start</th>
                 <th scope="col">Eind</th>
                 <th scope="col">
-                    <label for="group-selector">Similarly minded partners</label>
-                    <select class="form-select" id="group-selector" name="groupselector" hx-get="/api/fill_personal" hx-target="#artist_data" hx-swap="innerHTML" hx-trigger="load, change">
+                    
+                    <label for="group-selector">{% if has_groups %} Similarly minded partners {% else %} Join at least one group to see friends {% endif %}</label>
+                    <select class="form-select form-control input-sm" id="group-selector" name="groupselector" hx-get="/api/fill_personal" hx-target="#artist_data" hx-swap="innerHTML" hx-trigger="load, change">
                         {% for group in current_user.groups %}
                         <option value="{{ group.group_id }}">{{ group.group_name }}</option>
                         {% endfor %}

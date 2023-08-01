@@ -85,20 +85,22 @@ def get_friends():
 
 @app.route('/api/fill_personal')
 def fill_personal():
+    res = current_user.get_all_artists_ordered()
     group_id = request.args.get('groupselector')
     
-    # Get the users who are part of the specified group
-    users_in_group = User.query.filter(User.groups.any(group_id=group_id)).all()
-    users_in_group = [user for user in users_in_group if user.username != current_user.username]
-
-    # Loop through all artists
-    res = current_user.get_all_artists_ordered()
-    for i in range(0,len(res)):
-        # Get the users who are part of the specified group and are going to this artist
-        users_going_to_artist = [
-            user for user in users_in_group if res[i] in user.artists
-        ]
-        setattr(res[i], "friendsgoing", [user.username for user in users_going_to_artist])
+    if group_id is None or group_id == '' or len(group_id) == 0:
+        pass
+    else:
+        # Get the users who are part of the specified group
+        users_in_group = User.query.filter(User.groups.any(group_id=group_id)).all()
+        users_in_group = [user for user in users_in_group if user.username != current_user.username]
+    
+        for i in range(0,len(res)):
+            # Get the users who are part of the specified group and are going to this artist
+            users_going_to_artist = [
+                user for user in users_in_group if res[i] in user.artists
+            ]
+            setattr(res[i], "friendsgoing", [user.username for user in users_going_to_artist])
     
     return render_template('api_fill_personal.html', data=res)
 

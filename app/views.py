@@ -55,7 +55,12 @@ def groups():
 @app.route("/personal_timetable")
 @login_required
 def personal_timetable():
-    return render_template("personal_timetable.html")
+    print(len(current_user.groups))
+    if len(current_user.groups) > 0:
+        has_groups = True
+    else:
+        has_groups = False
+    return render_template("personal_timetable.html", has_groups=has_groups)
 
 
 @app.route('/login', methods=['GET', 'POST'])
