@@ -2,13 +2,11 @@
     {% for group in membergroups %}
     <li>{{ group }}</li>
     <ul>
-        
-            {% for member in membergroups[group] %}
-            <li>
+        {% for member in membergroups[group] %}
+        <li>
             {{ member.username }}
         </li>
-            {% endfor %}
-        
+        {% endfor %}
     </ul>
     {% endfor %}
 </ul>
