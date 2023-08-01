@@ -34,7 +34,7 @@ class User(UserMixin, db.Model):
     user_id = Column(Integer, autoincrement=True, primary_key=True)
     username = Column(String(80), nullable=False, unique=True)
     password_hash = Column(String(128))
-    email = Column(String(80), nullable=True)
+    email = Column(String(80), nullable=True, unique=True)
     created = Column(DateTime, default=datetime.now())
 
     groups = db.relationship("Group", secondary=user_to_group, backref="group")
