@@ -3,16 +3,48 @@
 <body>
 
     <div class="container">
-        <h1>Lowlands 2023</h1>
-        <h3>Join groups</h3>
+        <h1>Groups</h1>
+        <p>Here you can create and join groups. By joining groups you and your friends show up in your personalized timetables.</p>
+        <h3>Your groups</h3>
+        <div class="container col-8" hx-get="/api/get_groups" hx-trigger="load" hx-swap="innerHTML" hx-target="#memberofgroups">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Group name</th>
+                        <th scope="col"># Members</th>
+                        <th scope="col">Type</th>
+                    </tr>
+                </thead>
+                <tbody id="memberofgroups">
+
+                </tbody>
+            </table>
+        </div>
+
+        <h4>Open invites</h4>
+        <p> t.b.d. </p>
+
+        <h4>Create a private group</h4>
+        <p> t.b.d. </p>
+
+        <h4>Inivite friends to your groups</h4>
+        <p> t.b.d. </p>
+
+
+        <h3>Join one of the public groups</h3>
+        <p><i>Please note that this means anyone in the group can see your username in their overview</i></p>
 
         <div class="form-group">
-            <label for="group-selector">Join group</label>
-            <select class="form-select" id="group-selector" name="groupselector">
-                {% for group in groups %}
-                <option value="{{ group.group_id }}">{{ group.group_name }}</option>
-                {% endfor %}
-            </select>
+            <div class="row">
+                <div class="col-4">
+                    <label for="group-selector">Join group</label>
+                    <select class="form-select" id="group-selector" name="groupselector">
+                        {% for group in groups %}
+                        <option value="{{ group.group_id }}">{{ group.group_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
             <br>
 
             <div class="btn-group" role="group" aria-label="Group actions">
@@ -22,46 +54,6 @@
                     class="btn btn-secondary">Leave</a>
             </div>
         </div>
-
-
-        <br>
-        <br>
-        <br>
-
-        <h3> Member of groups:</h3>
-        <div id="memberofgroups">
-            <ul>
-                {% for group in membergroups %}
-                <li>{{ group }}</li>
-                <ul>
-                    
-                        {% for member in membergroups[group] %}
-                        <li>
-                        {{ member.username }}
-                    </li>
-                        {% endfor %}
-                    
-                </ul>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <br>
-        <br>
-        <br>
-
-        <h3> Create a group</h3>
-        <p> t.b.d. </p>
-        <!-- <h3>Create a group</h3>
-        <div class="form-group" >
-            <label for="group-creator">Join group</label>
-            <input type="text" class="form-control" id="group-creator" name="groupcreator" placeholder="Group name">
-          <br>
-          <a hx-include="[name='groupselector']" hx-get="/api/create_group" hx-target="#result" hx-swap="outerHTML" class="btn btn-primary">Join</a>
-          </div>
-          
-          <div id="result"></div> -->
-
 
     </div>
 </body>

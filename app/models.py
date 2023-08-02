@@ -51,7 +51,35 @@ class User(UserMixin, db.Model):
     def get_friends_artists(self, group_id):
         friends = self.get_friends(group_id)
         return {friend.username: db.session.query(Artist).filter(Artist.artist_id.in_([art.artist_id for art in friend.artists])).all() for friend in friends}
+    
+    def create_group(self, group_name):
+        owner_of_group = Group.query().filter(Group.owner_id == self.user_id).all()
+        if len(owner_of_group) > 3:
+            return False, "You can't create more than 3 groups"
+        else:
+            group = Group(group_name=group_name, owner_id=self.user_id)
+            db.session.add(group)
+            db.session.commit()
+            return True, "Group created"
         
+    def invite_user_to_group(self, group_id, invited_user_id):
+        check_user_groupmember = group_id in [group.group_id for group in self.groups]
+        if check_user_groupmember:
+            gadd = GroupInvite(to_group_id=group_id, from_user_id=self.user_id, to_user_id=invited_user_id)
+            db.session.add(gadd)
+            db.session.commit()
+            return True, "User invited"
+        else:
+            return False, "You are not a member of this group"
+        
+    def accept_group_invite(self, invite_id):
+        group_invite = GroupInvite.query.get(invite_id)
+        if group_invite.to_user_id != self.user_id:
+            raise PermissionError("You are not the invited user")
+        self.add_user_to_group(Group.query.get(group_invite.to_group_id))
+        group_invite.accepted = True
+        db.session.commit()
+    
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
@@ -137,3 +165,15 @@ class Group(db.Model):
     group_id = Column(Integer, autoincrement=True, primary_key=True)
     group_name = Column(String(280), nullable=False)
     owner_id = Column(Integer, nullable=False)
+    private = Column(Boolean, nullable=True, default=True)
+    
+    
+class GroupInvite(db.Model):
+    
+    __tablename__ = 'group_invite'
+    
+    invite_id = Column(Integer, autoincrement=True, primary_key=True)
+    to_group_id = Column(Integer, nullable=False)
+    from_user_id = Column(Integer, nullable=False)
+    to_user_id = Column(Integer, nullable=False)
+    accepted = Column(Boolean, nullable=False, default=False)

@@ -1,0 +1,8 @@
+
+{% for group in current_user.groups %}
+<tr>
+    <td>{{ group.group_name }}</td>
+    <td>?</td>
+    <td>Public</td>
+</tr>
+{% endfor %}

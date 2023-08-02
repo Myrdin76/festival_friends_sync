@@ -20,7 +20,7 @@ def fill_table():
     else:
         data = Artist.query.filter_by(stage=stage, day=day).all()
         
-    return render_template('api_fill_table.html', data=data)
+    return render_template('api/fill_table.html', data=data)
 
 @app.route('/api/delete_artist/<int:artist_id>', methods=['GET', 'POST'])
 @login_required
@@ -53,37 +53,34 @@ def select_artist():
 @login_required
 def join_group():
     gid = request.args.get('groupselector')
-    print(gid)
     group = Group.query.get(gid)
-    
     current_user.add_user_to_group(group)
     
-    membergroups = {group.group_name: [user for user in current_user.get_friends(group.group_id)] for group in current_user.groups}
-    
-    return render_template('api_list_of_groups.html', membergroups=membergroups)
+    return render_template('api/list_of_groups.html')
 
 
 @app.route('/api/leave_group', methods=['GET', 'POST'])
 @login_required
 def leave_group():
     gid = request.args.get('groupselector')
-    print(gid)
     group = Group.query.get(gid)
-    
     current_user.remove_user_from_group(group)
     
-    membergroups = {group.group_name: [user for user in current_user.get_friends(group.group_id)] for group in current_user.groups}
-    
-    return render_template('api_list_of_groups.html', membergroups=membergroups)
+    return render_template('api/list_of_groups.html')
 
-
-@app.route('/api/get_friends')
+@app.route('/api/get_groups', methods=['GET'])
 @login_required
-def get_friends():
-    gid = request.args.get('groupselector')
-    group = Group.query.get(gid)
+def get_groups():
+    return render_template('api/list_of_groups.html')
+
+
+# @app.route('/api/get_friends')
+# @login_required
+# def get_friends():
+#     gid = request.args.get('groupselector')
+#     group = Group.query.get(gid)
     
-    return render_template('api_list_of_friends.html', group=group)
+#     return render_template('api/list_of_friends.html')
 
 
 @app.route('/api/fill_personal')
@@ -106,7 +103,7 @@ def fill_personal():
             ]
             setattr(res[i], "friendsgoing", [user.username for user in users_going_to_artist])
     
-    return render_template('api_fill_personal.html', data=res)
+    return render_template('api/fill_personal.html', data=res)
 
 @app.route('/api/change_username', methods=['GET', 'POST'])
 @login_required
@@ -127,7 +124,7 @@ def change_username():
             return response
     else:
         cu_form = ChangeUsernameForm()
-        return render_template("api_change_username_form.html", cu_form=cu_form)
+        return render_template("api/change_username_form.html", cu_form=cu_form)
 
 @app.route('/api/delete_struct')
 @login_required

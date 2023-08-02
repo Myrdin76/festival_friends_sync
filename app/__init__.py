@@ -36,4 +36,4 @@ migrate.init_app(app, db)
 bootstrap.init_app(app)
 csrf.init_app(app)
 
-from app import models, views, api
+from app import models, views, api, errors
