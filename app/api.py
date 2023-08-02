@@ -1,9 +1,10 @@
-from flask import render_template, request, jsonify, redirect, url_for
+from flask import render_template, request, jsonify, redirect, url_for, make_response
 from flask_login import login_required, current_user
 import pandas as pd
 
-from app import app
+from app import app, db
 from app.models import User, Artist, Group
+from app.forms import ChangeUsernameForm, EmptyForm
 # from app.datastore import ArtistStore
 
 @app.route('/api/fill_table')
@@ -63,6 +64,7 @@ def join_group():
 
 
 @app.route('/api/leave_group', methods=['GET', 'POST'])
+@login_required
 def leave_group():
     gid = request.args.get('groupselector')
     print(gid)
@@ -76,6 +78,7 @@ def leave_group():
 
 
 @app.route('/api/get_friends')
+@login_required
 def get_friends():
     gid = request.args.get('groupselector')
     group = Group.query.get(gid)
@@ -84,6 +87,7 @@ def get_friends():
 
 
 @app.route('/api/fill_personal')
+@login_required
 def fill_personal():
     res = current_user.get_all_artists_ordered()
     group_id = request.args.get('groupselector')
@@ -104,6 +108,31 @@ def fill_personal():
     
     return render_template('api_fill_personal.html', data=res)
 
+@app.route('/api/change_username', methods=['GET', 'POST'])
+@login_required
+def change_username():
+    if request.method == 'POST':
+        form = ChangeUsernameForm(request.form)
+        if form.validate_on_submit():
+            name = form.username.data
+            current_user.username = name
+            db.session.commit()
+            
+            response = make_response(f"<p>Username: <b>{name}</b></p>")
+            response.headers['HX-Trigger'] = "clear_form"
+            return response
+        else:
+            response = make_response("Invalid username")
+            response.headers['HX-Retarget'] = "#validation_error"
+            return response
+    else:
+        cu_form = ChangeUsernameForm()
+        return render_template("api_change_username_form.html", cu_form=cu_form)
+
+@app.route('/api/delete_struct')
+@login_required
+def delete_struct():
+    return ""
 
 @app.route('/api/test', methods=['POST'])
 def api_test():

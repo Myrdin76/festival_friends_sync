@@ -11,6 +11,8 @@ from app.forms import (
     LoginForm,
     RegistrationForm,
     ResetPasswordForm,
+    EmptyForm,
+    ChangeUsernameForm
 )
 from app import app, db
 from app.models import User, Artist, Group, user_to_group
@@ -100,6 +102,13 @@ def register():
         flash(('All good, lets go!'))
         return redirect(url_for('login'))
     return render_template('register.html', title=('Register'), form=form)
+
+@app.route('/user')
+@login_required
+def user():
+    cu_form = ChangeUsernameForm()
+    return render_template('user.html', cu_form=cu_form)
+
 
 
 @app.route("/testpage")

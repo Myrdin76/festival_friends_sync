@@ -1,0 +1,23 @@
+{% extends "base.html" %} {% block content %}
+
+<body>
+
+    <div class="container">
+        <h1>Profile</h1>
+        <br>
+        <h3>Personal details</h3>
+        <div id="username"><p>Username: <b>{{current_user.username}}</b></p></div>
+        <a href="" hx-get="{{url_for('change_username')}}" hx-target="#username_form" hx-swap="innerHTML" hx-trigger="click">Change username</a>
+        
+        <div hx-trigger="clear_form from:body" hx-target="#username_form" hx-get="/api/delete_struct" hx-swap="innerHTML"></div>
+
+        <div id="username_form"></div>
+
+        <br>
+        <br>
+        <h3>Open group invites</h3>
+        <div id="open_group_invites">Currently you do not have any open group invites</div>
+
+</body>
+
+{% endblock %}

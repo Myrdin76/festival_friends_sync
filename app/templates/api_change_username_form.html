@@ -1,0 +1,10 @@
+<form hx-post="{{url_for('change_username')}}" hx-target="#username" hx-swap="innerHTML">
+    <div class="form-group"></div>
+    {{cu_form.hidden_tag()}}
+    <div class="row">
+        <div class="col-4">{{cu_form.username(class="form-control")}}</div>
+    </div>
+    {{cu_form.submit(class="btn btn-secondary")}}
+    <div>
+</form>
+<div id="validation_error"></div>

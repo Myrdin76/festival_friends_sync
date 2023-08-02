@@ -40,3 +40,17 @@ class ResetPasswordForm(FlaskForm):
         'Repeat Password', validators=[DataRequired(),
                                            EqualTo('password')])
     submit = SubmitField('Reset Password', render_kw=button_style)
+
+
+class ChangeUsernameForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    submit = SubmitField('Change Username', render_kw=button_style)
+    
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user is not None:
+            raise ValidationError(('Username already in use'))
+
+
+class EmptyForm(FlaskForm):
+    submit = SubmitField('Submit', render_kw=button_style)
