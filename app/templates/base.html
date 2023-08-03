@@ -16,6 +16,7 @@
     <script src="https://unpkg.com/htmx.org@1.9.4" integrity="sha384-zUfuhFKKZCbHTY6aRR46gxiqszMk5tcHjsVFxnUo8VMus4kHGVdIYVbOYYNlKmHV" crossorigin="anonymous"></script>
     <!-- <script src="https://unpkg.com/htmx.org/dist/ext/response-targets.js"></script> -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Lowlands Friends!</title>
 </head>
 
@@ -85,7 +86,7 @@
     <div class="container">
     {% with messages = get_flashed_messages() %}
     {% if messages %}
-    <div class="alert alert-info alert-dismissible fade show" role="alert">
+    <div class="alert alert-info alert-dismissible fade show" role="alert" style="margin-top: 15px;">
         {% for message in messages %}
         <p class="text-wrap text-break" >{{message}}</p>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
