@@ -22,7 +22,10 @@
                 hx-get="/api/select_artist"
                 hx-include="[name='{{ artist.artist_id }}']"
                 {% if not current_user.is_authenticated %}
-                disabled 
+                disabled
+                {% endif %}
+                {% if artist.user_going %}
+                checked
                 {% endif %}
                 />
                 <input type="hidden" name="{{ artist.artist_id }}" value="off"/>

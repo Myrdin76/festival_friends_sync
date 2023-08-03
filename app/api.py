@@ -13,13 +13,28 @@ def fill_table():
     stage = request.args.get('stageselector')
     day = request.args.get('dayselector')
     if stage == 'All' and day == 'All':
-        data = Artist.query.all()
+        where_stmt = ""
     elif stage == 'All':
-        data = Artist.query.filter_by(day=day).all()
+        where_stmt = "WHERE day = :day"
     elif day == 'All':
-        data = Artist.query.filter_by(stage=stage).all()
+        where_stmt = "WHERE stage = :stage"
     else:
-        data = Artist.query.filter_by(stage=stage, day=day).all()
+        where_stmt = "WHERE stage = :stage AND day = :day"
+    
+    txt = f"""
+            SELECT artist.*, COALESCE(B.user_id, 0) as user_going
+            FROM artist 
+            LEFT JOIN (
+                SELECT *
+                FROM user_to_artist
+                WHERE user_to_artist.user_id = :user_id
+                ) as B ON
+                artist.artist_id = B.artist_id
+            {where_stmt}
+        """
+    user_id = current_user.user_id if current_user.is_authenticated else 0
+    stmt = text(txt)
+    data = db.session.execute(stmt, {"user_id": user_id, "stage":stage, "day":day}).fetchall()
         
     return render_template('api/fill_table.html', data=data)
 
