@@ -16,8 +16,9 @@
         <br>
         <br>
         <h3>Open group invites</h3>
-        <div id="open_group_invites">Currently you do not have any open group invites</div>
-
+        <div id="open-invites" hx-get="/api/get_open_invites" hx-trigger="load" hx-target="#invites" hx-swap="innerHTML">
+            <div id="invites"></div>
+        </div>
 </body>
 
 {% endblock %}
