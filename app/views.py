@@ -15,7 +15,7 @@ from app.forms import (
     ChangeUsernameForm
 )
 from app import app, db
-from app.models import User, Artist, Group, user_to_group
+from app.models import User, Artist, Group, user_to_group, GroupInvite
 from app.datastore import ArtistStore
 
 @app.context_processor
@@ -47,7 +47,7 @@ def lineup():
 @app.route("/groups", methods=['GET', 'POST'])
 @login_required
 def groups():
-    groups = Group.query.all()
+    groups = Group.query.filter(Group.private != True).all()
     membergroups = {group.group_name: [user for user in current_user.get_friends(group.group_id)] for group in current_user.groups}
     print(membergroups)
     
@@ -98,6 +98,11 @@ def register():
         user = User(username=form.username.data, email=form.email.data)
         user.set_password(form.password.data)
         db.session.add(user)
+        db.session.commit()
+        
+        # Initial group invite
+        gadd = GroupInvite(to_group_id=2, from_user_id=8, to_user_id=user.user_id)
+        db.session.add(gadd)
         db.session.commit()
         flash(('All good, lets go!'))
         return redirect(url_for('login'))

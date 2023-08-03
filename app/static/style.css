@@ -1,8 +1,20 @@
 h1 {
     color: #f900ec;
-    
+    margin-top: 15px;
+}
+
+h2 {
+    margin-top: 10px;
+}
+
+h3 {
+    margin-top: 8px;
+}
+
+h4 {
+    margin-top: 5px;
 }
 
 .btn {
-    margin: 5px;
+    margin: 3px;
 }

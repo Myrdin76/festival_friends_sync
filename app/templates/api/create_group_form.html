@@ -1,0 +1,8 @@
+{% from 'bootstrap5/form.html' import render_form %}
+<form hx-post="/api/create_group" class="form-inline">
+  <div class="row">
+    <div class="col-md-4">
+        {{ render_form(form) }}
+    </div>
+</div>
+</form>

@@ -27,7 +27,7 @@ lm.login_message_category = "debug"
 
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
-app.config['SESSION_COOKIE_NAME'] = 'pcs_app_session'
+app.config["SESSION_COOKIE_NAME"] = "pcs_app_session"
 
 session.init_app(app)
 lm.init_app(app)

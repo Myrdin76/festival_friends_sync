@@ -5,7 +5,7 @@ import jwt
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Time
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Time, select, UniqueConstraint, func, text
 
 from app import db, lm, config
 
@@ -62,15 +62,21 @@ class User(UserMixin, db.Model):
             db.session.commit()
             return True, "Group created"
         
-    def invite_user_to_group(self, group_id, invited_user_id):
+    def invite_user_to_group(self, group_id: int, invited_user_id: int):
         check_user_groupmember = group_id in [group.group_id for group in self.groups]
-        if check_user_groupmember:
+        check_invited_user_groupmember = group_id in [group.group_id for group in User.query.get(invited_user_id).groups]
+        invite_already_open = len(GroupInvite.query.filter(GroupInvite.to_group_id == group_id, GroupInvite.to_user_id == invited_user_id).all()) > 0
+        if not check_user_groupmember:
+            return False, "You are not a member of this group"
+        if check_invited_user_groupmember:
+            return False, "User is already a member of this group"
+        if invite_already_open:
+            return False, "User has already been invited"
+        else:
             gadd = GroupInvite(to_group_id=group_id, from_user_id=self.user_id, to_user_id=invited_user_id)
             db.session.add(gadd)
             db.session.commit()
             return True, "User invited"
-        else:
-            return False, "You are not a member of this group"
         
     def accept_group_invite(self, invite_id):
         group_invite = GroupInvite.query.get(invite_id)
@@ -79,6 +85,13 @@ class User(UserMixin, db.Model):
         self.add_user_to_group(Group.query.get(group_invite.to_group_id))
         group_invite.accepted = True
         db.session.commit()
+        
+    def get_open_invites(self):
+        open_invites = GroupInvite.query.join(User, GroupInvite.from_user_id == User.user_id).\
+            join(Group, GroupInvite.to_group_id == Group.group_id).\
+            filter(GroupInvite.to_user_id == self.user_id, GroupInvite.accepted == False).\
+            add_columns(GroupInvite.invite_id, User.username, Group.group_name).all()
+        return open_invites
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -134,6 +147,21 @@ class User(UserMixin, db.Model):
             self.artists.remove(artist)
             db.session.commit()
             
+    def count_group_members(self, group_id):
+        query = text("""SELECT COUNT(user_id) FROM user_to_group WHERE group_id = :group_id""")
+        result = db.session.execute(query, {"group_id": group_id}).fetchone()[0]
+        return result
+            
+    def get_group_details(self):
+        groups = self.groups
+        ## get the number of members in each group
+        group_details = [
+            {"group_name": group.group_name, 
+             "group_id": group.group_id, 
+             "members": self.count_group_members(group.group_id),
+             "type": "Private" if group.private else "Public"} for group in groups]
+        return group_details
+            
     def get_id(self):
         return str(self.user_id)
 
@@ -177,3 +205,4 @@ class GroupInvite(db.Model):
     from_user_id = Column(Integer, nullable=False)
     to_user_id = Column(Integer, nullable=False)
     accepted = Column(Boolean, nullable=False, default=False)
+    db.UniqueConstraint(to_group_id, to_user_id)

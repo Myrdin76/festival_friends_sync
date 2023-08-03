@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, validators
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from app.models import User, Group
 from app import config
 
-button_style = {"style": "margin-top: 15px;"}
+button_style = {"style": "margin-top: 5px;"}
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired()])
@@ -43,13 +43,23 @@ class ResetPasswordForm(FlaskForm):
 
 
 class ChangeUsernameForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
+    username = StringField('Username', validators=[DataRequired(), validators.Length(min=3, max=20)])
     submit = SubmitField('Change Username', render_kw=button_style)
     
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user is not None:
             raise ValidationError(('Username already in use'))
+
+
+class CreateGroupForm(FlaskForm):
+    groupname = StringField('Group Name', validators=[DataRequired(), validators.Length(min=3, max=30)])
+    submit = SubmitField('Create Group', render_kw=button_style)
+    
+    def validate_groupname(self, groupname):
+        group = Group.query.filter_by(group_name=groupname.data).first()
+        if group is not None:
+            raise ValidationError(('Group name already in use'))
 
 
 class EmptyForm(FlaskForm):

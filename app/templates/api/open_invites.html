@@ -1,0 +1,12 @@
+<body>
+    {% for invite in invites %}
+    <div class="card" id="invite_{{invite.invite_id}}" style="margin: 20px;">
+        <div class="card-body">
+            <h5 class="card-title">{{ invite.group_name }}</h5>
+            <p class="card-text">You have been invited to join this group by <b>{{ invite.username }}</b>.</p>
+            <a hx-get="/api/accept_invite/{{invite.invite_id}}" hx-target="#invite_{{invite.invite_id}}" hx-swap="outerHTML" class="btn btn-primary">Accept</a>
+            <a hx-get="/api/decline_invite/{{invite.invite_id}}" hx-target="#invite_{{invite.invite_id}}" hx-swap="outerHTML" class="btn btn-secondary" hx-confirm="Are you sure you want to decline?">Decline</a>
+        </div>
+    </div>
+    {% endfor %}
+</body>

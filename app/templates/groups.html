@@ -1,4 +1,5 @@
 {% extends "base.html" %} {% block content %}
+{% from 'bootstrap5/form.html' import render_form %}
 
 <body>
 
@@ -6,7 +7,9 @@
         <h1>Groups</h1>
         <p>Here you can create and join groups. By joining groups you and your friends show up in your personalized timetables.</p>
         <h3>Your groups</h3>
-        <div class="container col-8" hx-get="/api/get_groups" hx-trigger="load" hx-swap="innerHTML" hx-target="#memberofgroups">
+        <div hx-get="/api/get_groups" hx-trigger="reloadg from:body" hx-swap="innerHTML" hx-target="#memberofgroups"></div>
+        <div class="container" hx-get="/api/get_groups" hx-trigger="load" hx-trigger="reloadg from:body" hx-swap="innerHTML"
+            hx-target="#memberofgroups">
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
@@ -20,23 +23,61 @@
                 </tbody>
             </table>
         </div>
+        <br>
 
         <h4>Open invites</h4>
-        <p> t.b.d. </p>
+        <div class="container">
+        <div id="open-invites" hx-get="/api/get_open_invites" hx-trigger="load" hx-target="#invites" hx-swap="innerHTML">
+            <div id="invites"></div>
+        </div>
+        </div>
+        <br>
 
         <h4>Create a private group</h4>
-        <p> t.b.d. </p>
+        <div class="container" id="create-group" hx-get="/api/create_group" hx-target="this" hx-swap="innerHTML" hx-trigger="load">
+        </div>
+        <br>
 
         <h4>Inivite friends to your groups</h4>
-        <p> t.b.d. </p>
+        <div class="container">
 
+            <h6>
+
+            </h6>
+            <form>
+                <div class="form-group">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+                    <label for="group-selector-inv">Invite to group</label>
+                    <select class="form-select" id="group-selector-inv" name="groupselector-inv">
+                        {% for group in current_user.groups %}
+                        <option value="{{ group.group_id }}">{{ group.group_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <label for="searchip">Search users
+                        <span class="htmx-indicator">
+                            Searching...
+                        </span></label>
+                    <input class="form-control" type="search" name="search" placeholder="Begin Typing To Search Users..."
+                        hx-post="/api/search_users" hx-trigger="keyup changed delay:500ms, search" hx-target="#search-results"
+                        hx-indicator=".htmx-indicator" id="searchip">
+
+                    <div id="search-results"></div>
+
+                </div>
+            </form>
+
+        </div>
+
+        <br>
 
         <h3>Join one of the public groups</h3>
         <p><i>Please note that this means anyone in the group can see your username in their overview</i></p>
 
         <div class="form-group">
             <div class="row">
-                <div class="col-4">
+                <div class="col-6">
                     <label for="group-selector">Join group</label>
                     <select class="form-select" id="group-selector" name="groupselector">
                         {% for group in groups %}

@@ -3,8 +3,9 @@ from flask_login import login_required, current_user
 import pandas as pd
 
 from app import app, db
-from app.models import User, Artist, Group
-from app.forms import ChangeUsernameForm, EmptyForm
+from app.models import User, Artist, Group, GroupInvite
+from app.forms import ChangeUsernameForm, EmptyForm, CreateGroupForm
+from sqlalchemy import select, func, text
 # from app.datastore import ArtistStore
 
 @app.route('/api/fill_table')
@@ -126,10 +127,73 @@ def change_username():
         cu_form = ChangeUsernameForm()
         return render_template("api/change_username_form.html", cu_form=cu_form)
 
+
+@app.route('/api/get_open_invites')
+def get_open_invites():
+    invites = current_user.get_open_invites()
+    if len(invites) == 0:
+        return "<p> <i>Currently you do not have any open invites </i> </p>"
+    return render_template('api/open_invites.html', invites=invites)
+
+@app.route('/api/accept_invite/<int:invite_id>')
+def accept_invite(invite_id):
+    current_user.accept_group_invite(invite_id)
+    response = make_response("<p> <em> Invite accepted 🎉 🤘</em> </p>")
+    response.headers['HX-Trigger'] = "reloadg"
+    
+    return response
+
+@app.route('/api/decline_invite/<int:invite_id>')
+def decline_invite(invite_id):
+    gi = GroupInvite.query.get(invite_id)
+    db.session.delete(gi)
+    db.session.commit()
+    return "<p> <em> Invite declined ☹️ ⚡️ </em> </p> "
+
+
+@app.route('/api/invite_user/<int:user_id>', methods=['GET', 'POST'])
+def invite_user(user_id):
+    if request.method == "POST":
+        to_group_id = int(request.form.get("groupselector-inv"))
+        res, msg = current_user.invite_user_to_group(to_group_id, user_id)
+        return msg
+
 @app.route('/api/delete_struct')
 @login_required
 def delete_struct():
     return ""
+
+@app.post('/api/search_users')
+def search_users():
+    search_string = request.form.get('search')
+    if len(search_string) == 0:
+        users = []
+    else:
+        users = User.query.filter(User.username.ilike(f"%{search_string}%")).limit(5).all()
+    return render_template('api/search_users.html', users=users)
+
+@app.route('/api/create_group', methods=['GET', 'POST'])
+def create_group():
+    if request.method == "GET":
+        form = CreateGroupForm()
+        return render_template('api/create_group_form.html', form=form)
+    if request.method == "POST":
+        form = CreateGroupForm(request.form)
+        if form.validate_on_submit():
+            group_name = form.groupname.data
+            group = Group(group_name=group_name, owner_id=current_user.user_id)
+            db.session.add(group)
+            db.session.commit()
+            current_user.add_user_to_group(group)
+            db.session.commit()
+            
+            response = make_response("<p> <em> 🎉 🤘 Group created 🎉 🤘</em> </p>")
+            response.headers['HX-Trigger'] = "reloadg"
+            
+            return response
+        else:
+            return render_template('api/create_group_form.html', form=form)
+        
 
 @app.route('/api/test', methods=['POST'])
 def api_test():

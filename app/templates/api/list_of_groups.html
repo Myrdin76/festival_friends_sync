@@ -1,8 +1,8 @@
 
-{% for group in current_user.groups %}
-<tr>
+{% for group in current_user.get_group_details() %}
+<tr id="group_id_{group.group_id}">
     <td>{{ group.group_name }}</td>
-    <td>?</td>
-    <td>Public</td>
+    <td>{{ group.members }}</td>
+    <td>{{ group.type }}</td>
 </tr>
 {% endfor %}
