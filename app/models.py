@@ -27,7 +27,7 @@ user_to_artist = db.Table(
 
 class User(UserMixin, db.Model):
     """Data model for user accounts"""
-    
+
     __tablename__ = "user"
 
     # columns
@@ -39,19 +39,27 @@ class User(UserMixin, db.Model):
 
     groups = db.relationship("Group", secondary=user_to_group, backref="group")
     artists = db.relationship("Artist", secondary=user_to_artist, backref="artist")
-    
+
     def get_all_artists_ordered(self):
-        res = db.session.query(Artist).filter(Artist.artist_id.in_([art.artist_id for art in self.artists])).order_by(Artist.startdate).all()
+        res = (
+            db.session.query(Artist)
+            .filter(Artist.artist_id.in_([art.artist_id for art in self.artists]))
+            .order_by(Artist.startdate)
+            .all()
+        )
         return res
-    
+
     def get_friends(self, group_id):
         friends = db.session.query(User).filter(User.user_id.in_([user.user_id for user in Group.query.get(group_id).group])).all()
         return friends
-    
+
     def get_friends_artists(self, group_id):
         friends = self.get_friends(group_id)
-        return {friend.username: db.session.query(Artist).filter(Artist.artist_id.in_([art.artist_id for art in friend.artists])).all() for friend in friends}
-    
+        return {
+            friend.username: db.session.query(Artist).filter(Artist.artist_id.in_([art.artist_id for art in friend.artists])).all()
+            for friend in friends
+        }
+
     def create_group(self, group_name):
         owner_of_group = Group.query().filter(Group.owner_id == self.user_id).all()
         if len(owner_of_group) > 3:
@@ -61,11 +69,13 @@ class User(UserMixin, db.Model):
             db.session.add(group)
             db.session.commit()
             return True, "Group created"
-        
+
     def invite_user_to_group(self, group_id: int, invited_user_id: int):
         check_user_groupmember = group_id in [group.group_id for group in self.groups]
         check_invited_user_groupmember = group_id in [group.group_id for group in User.query.get(invited_user_id).groups]
-        invite_already_open = len(GroupInvite.query.filter(GroupInvite.to_group_id == group_id, GroupInvite.to_user_id == invited_user_id).all()) > 0
+        invite_already_open = (
+            len(GroupInvite.query.filter(GroupInvite.to_group_id == group_id, GroupInvite.to_user_id == invited_user_id).all()) > 0
+        )
         if not check_user_groupmember:
             return False, "You are not a member of this group"
         if check_invited_user_groupmember:
@@ -77,7 +87,7 @@ class User(UserMixin, db.Model):
             db.session.add(gadd)
             db.session.commit()
             return True, "User invited"
-        
+
     def accept_group_invite(self, invite_id):
         group_invite = GroupInvite.query.get(invite_id)
         if group_invite.to_user_id != self.user_id:
@@ -85,14 +95,17 @@ class User(UserMixin, db.Model):
         self.add_user_to_group(Group.query.get(group_invite.to_group_id))
         group_invite.accepted = True
         db.session.commit()
-        
+
     def get_open_invites(self):
-        open_invites = GroupInvite.query.join(User, GroupInvite.from_user_id == User.user_id).\
-            join(Group, GroupInvite.to_group_id == Group.group_id).\
-            filter(GroupInvite.to_user_id == self.user_id, GroupInvite.accepted == False).\
-            add_columns(GroupInvite.invite_id, User.username, Group.group_name).all()
+        open_invites = (
+            GroupInvite.query.join(User, GroupInvite.from_user_id == User.user_id)
+            .join(Group, GroupInvite.to_group_id == Group.group_id)
+            .filter(GroupInvite.to_user_id == self.user_id, GroupInvite.accepted == False)
+            .add_columns(GroupInvite.invite_id, User.username, Group.group_name)
+            .all()
+        )
         return open_invites
-    
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
@@ -112,8 +125,7 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return "<User {}>".format(self.username)
-    
-    
+
     def add_user_to_group(self, group):
         if not isinstance(group, Group):
             raise ValueError("group must be an instance of the Group model")
@@ -121,8 +133,7 @@ class User(UserMixin, db.Model):
         if group not in self.groups:
             self.groups.append(group)
             db.session.commit()
-            
-            
+
     def add_user_to_artist(self, artist):
         if not isinstance(artist, Artist):
             raise ValueError("artist must be an instance of the Artist model")
@@ -130,7 +141,7 @@ class User(UserMixin, db.Model):
         if artist not in self.artists:
             self.artists.append(artist)
             db.session.commit()
-            
+
     def remove_user_from_group(self, group):
         if not isinstance(group, Group):
             raise ValueError("group must be an instance of the Group model")
@@ -138,7 +149,7 @@ class User(UserMixin, db.Model):
         if group in self.groups:
             self.groups.remove(group)
             db.session.commit()
-            
+
     def remove_user_from_artist(self, artist):
         if not isinstance(artist, Artist):
             raise ValueError("artist must be an instance of the Artist model")
@@ -146,22 +157,26 @@ class User(UserMixin, db.Model):
         if artist in self.artists:
             self.artists.remove(artist)
             db.session.commit()
-            
+
     def count_group_members(self, group_id):
         query = text("""SELECT COUNT(user_id) FROM user_to_group WHERE group_id = :group_id""")
         result = db.session.execute(query, {"group_id": group_id}).fetchone()[0]
         return result
-            
+
     def get_group_details(self):
         groups = self.groups
         ## get the number of members in each group
         group_details = [
-            {"group_name": group.group_name, 
-             "group_id": group.group_id, 
-             "members": self.count_group_members(group.group_id),
-             "type": "Private" if group.private else "Public"} for group in groups]
+            {
+                "group_name": group.group_name,
+                "group_id": group.group_id,
+                "members": self.count_group_members(group.group_id),
+                "type": "Private" if group.private else "Public",
+            }
+            for group in groups
+        ]
         return group_details
-            
+
     def get_id(self):
         return str(self.user_id)
 
@@ -172,9 +187,8 @@ def load_user(id):
 
 
 class Artist(db.Model):
-    
-    __tablename__ = 'artist'
-    
+    __tablename__ = "artist"
+
     artist_id = Column(Integer, primary_key=True)
     name = Column(String(280), nullable=False)
     stage = Column(String(280), nullable=False)
@@ -184,25 +198,25 @@ class Artist(db.Model):
     endtime = Column(String, nullable=False)
     festival = Column(String(280), nullable=False, default="Lowlands")
     day = Column(String(30), nullable=True)
-    
+
 
 class Group(db.Model):
-    
-    __tablename__ = 'group'
-    
+    __tablename__ = "group"
+
     group_id = Column(Integer, autoincrement=True, primary_key=True)
     group_name = Column(String(280), nullable=False)
     owner_id = Column(Integer, nullable=False)
     private = Column(Boolean, nullable=True, default=True)
-    
-    
+
+
 class GroupInvite(db.Model):
-    
-    __tablename__ = 'group_invite'
-    
+    __tablename__ = "group_invite"
+
     invite_id = Column(Integer, autoincrement=True, primary_key=True)
     to_group_id = Column(Integer, nullable=False)
     from_user_id = Column(Integer, nullable=False)
     to_user_id = Column(Integer, nullable=False)
     accepted = Column(Boolean, nullable=False, default=False)
+    # token = Column(String(280), nullable=True)
+    # created = Column(DateTime, nullable=False, default=datetime.utcnow)
     db.UniqueConstraint(to_group_id, to_user_id)

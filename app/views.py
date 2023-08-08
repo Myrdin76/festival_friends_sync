@@ -17,6 +17,8 @@ from app.forms import (
 from app import app, db
 from app.models import User, Artist, Group, user_to_group, GroupInvite
 from app.datastore import ArtistStore
+from app.wrappers import membership_required
+from app.helpers import create_group_invite_link
 
 @app.context_processor
 def inject_global_params():
@@ -114,6 +116,15 @@ def user():
     cu_form = ChangeUsernameForm()
     return render_template('user.html', cu_form=cu_form)
 
+
+@app.route('/group/<int:group_id>')
+@login_required
+@membership_required
+def group(group_id):
+    group = Group.query.get(group_id)
+    friends = current_user.get_friends(group_id)
+    invite_url = create_group_invite_link(group_id)
+    return render_template('group.html', group=group, friends=friends, invite_url=invite_url)
 
 
 @app.route("/testpage")

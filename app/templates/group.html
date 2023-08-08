@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<body>
+    <h1>Group page</h1>
+    <h2><i>{{group.group_name}}</i></h2>
+    <br>
+    <h3>Invite link</h3>
+    <div class="card">
+        <div class="card-body">
+        <p>Create link to invite anyone to your group</p>
+        <p class="d-inline-flex gap-1">
+            <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+              Create invite link
+            </a>
+          </p>
+          <div class="collapse" id="collapseExample">
+            <div class="card card-body">
+                <a href="{{invite_url}}">{{invite_url}}</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    <br>
+    <h3>Friends</h3>
+    <ul>
+        {% for user in friends %}
+            <li>{{user.username}}</li>
+        {% endfor %}
+    </ul>
+</body>
+
+{% endblock %}

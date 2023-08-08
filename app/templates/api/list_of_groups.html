@@ -1,7 +1,7 @@
 
 {% for group in current_user.get_group_details() %}
 <tr id="group_id_{group.group_id}">
-    <td>{{ group.group_name }}</td>
+    <td><a href="/group/{{group.group_id}}">{{ group.group_name }}</a></td>
     <td>{{ group.members }}</td>
     <td>{{ group.type }}</td>
 </tr>
