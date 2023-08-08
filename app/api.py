@@ -219,6 +219,9 @@ def accept_invite_link(invite_token):
         return redirect(url_for('groups'))
     else:
         group = Group.query.get(group_id)
+        if group in current_user.groups:
+            flash(f"You are already in group <i>{group.group_name}</i>")
+            return redirect(url_for('groups'))
         current_user.add_user_to_group(group)
         flash(f"Joined group {group.group_name}!")
         return redirect(url_for('groups'))
