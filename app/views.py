@@ -1,4 +1,4 @@
-from flask import render_template, request
+from flask import render_template, request, session
 import pandas as pd
 from sqlalchemy.orm import joinedload, lazyload, aliased
 
@@ -79,6 +79,10 @@ def login():
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
+        if invite_token := session.get('group_invite_token'):
+            print("session_invite_token", invite_token)
+            session.pop('group_invite_token', None)
+            return redirect(url_for('accept_invite_link', invite_token=invite_token))
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
         return redirect(next_page)
