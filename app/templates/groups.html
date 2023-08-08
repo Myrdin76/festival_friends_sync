@@ -27,9 +27,9 @@
 
         <h4>Open invites</h4>
         <div class="container">
-        <div id="open-invites" hx-get="/api/get_open_invites" hx-trigger="load" hx-target="#invites" hx-swap="innerHTML">
-            <div id="invites"></div>
-        </div>
+            <div id="open-invites" hx-get="/api/get_open_invites" hx-trigger="load" hx-target="#invites" hx-swap="innerHTML">
+                <div id="invites"></div>
+            </div>
         </div>
         <br>
 
@@ -73,29 +73,29 @@
         <br>
 
         <h3>Join one of the public groups</h3>
-        <p><i>Please note that this means anyone in the group can see your username in their overview</i></p>
+        <div class="container">
+            <p><i>Please note that this means anyone in the group can see your username in their overview</i></p>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-6">
+                        <label for="group-selector">Join group</label>
+                        <select class="form-select" id="group-selector" name="groupselector">
+                            {% for group in groups %}
+                            <option value="{{ group.group_id }}">{{ group.group_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <br>
 
-        <div class="form-group">
-            <div class="row">
-                <div class="col-6">
-                    <label for="group-selector">Join group</label>
-                    <select class="form-select" id="group-selector" name="groupselector">
-                        {% for group in groups %}
-                        <option value="{{ group.group_id }}">{{ group.group_name }}</option>
-                        {% endfor %}
-                    </select>
+                <div class="btn-group" role="group" aria-label="Group actions">
+                    <a hx-include="[name='groupselector']" hx-get="/api/join_group" hx-target="#memberofgroups" hx-swap="innerHTML"
+                        class="btn btn-primary">Join</a>
+                    <a hx-include="[name='groupselector']" hx-get="/api/leave_group" hx-target="#memberofgroups" hx-swap="innerHTML"
+                        class="btn btn-secondary">Leave</a>
                 </div>
             </div>
-            <br>
-
-            <div class="btn-group" role="group" aria-label="Group actions">
-                <a hx-include="[name='groupselector']" hx-get="/api/join_group" hx-target="#memberofgroups" hx-swap="innerHTML"
-                    class="btn btn-primary">Join</a>
-                <a hx-include="[name='groupselector']" hx-get="/api/leave_group" hx-target="#memberofgroups" hx-swap="innerHTML"
-                    class="btn btn-secondary">Leave</a>
-            </div>
         </div>
-
     </div>
 </body>
 

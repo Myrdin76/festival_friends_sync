@@ -16,6 +16,7 @@ class Config():
     # General Config
     SECRET_KEY = os.environ.get('SECRET_KEY')
     FLASK_APP = "app.py"
+    BASE_URL = os.environ.get("BASE_URL")
     
     if ENV == 'dev':
         SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")

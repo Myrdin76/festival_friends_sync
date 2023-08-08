@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, redirect, url_for, make_response
+from flask import render_template, request, jsonify, redirect, url_for, make_response, flash
 from flask_login import login_required, current_user
 import pandas as pd
 
@@ -6,6 +6,7 @@ from app import app, db
 from app.models import User, Artist, Group, GroupInvite
 from app.forms import ChangeUsernameForm, EmptyForm, CreateGroupForm
 from sqlalchemy import select, func, text
+from app.helpers import verify_group_invite_token
 # from app.datastore import ArtistStore
 
 @app.route('/api/fill_table')
@@ -209,6 +210,19 @@ def create_group():
         else:
             return render_template('api/create_group_form.html', form=form)
         
+
+@app.route('/gt/<string:invite_token>')
+def accept_invite_link(invite_token):
+    group_id = verify_group_invite_token(invite_token)
+    if group_id is None:
+        flash(f"Invalid invite token")
+        return redirect(url_for('groups'))
+    else:
+        group = Group.query.get(group_id)
+        current_user.add_user_to_group(group)
+        flash(f"Joined group {group.group_name}!")
+        return redirect(url_for('groups'))
+
 
 @app.route('/api/test', methods=['POST'])
 def api_test():
