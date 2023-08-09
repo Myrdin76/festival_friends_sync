@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import render_template, request, jsonify, redirect, url_for, make_response, flash, session, Markup
 from flask_login import login_required, current_user
 import pandas as pd
@@ -119,7 +121,9 @@ def fill_personal():
                 user for user in users_in_group if res[i][0] in user.artists
             ]
             setattr(res[i][0], "friendsgoing", [user.username for user in users_going_to_artist])
-    print(res[0][0].__dict__)
+            if not res[i][1] is None and res[i][1] < timedelta(0):
+                setattr(res[i][0], "overlap", True)
+                
     return render_template('api/fill_personal.html', data=res)
 
 @app.route('/api/change_username', methods=['GET', 'POST'])
