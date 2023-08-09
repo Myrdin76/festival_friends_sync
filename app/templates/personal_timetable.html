@@ -18,6 +18,7 @@
                         {% for group in current_user.groups %}
                         <option value="{{ group.group_id }}">{{ group.group_name }}</option>
                         {% endfor %}
+                        <option value="0">None</option>
                     </select>
                 </th>
             </tr>
