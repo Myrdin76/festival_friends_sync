@@ -116,10 +116,10 @@ def fill_personal():
         for i in range(0,len(res)):
             # Get the users who are part of the specified group and are going to this artist
             users_going_to_artist = [
-                user for user in users_in_group if res[i] in user.artists
+                user for user in users_in_group if res[i][0] in user.artists
             ]
-            setattr(res[i], "friendsgoing", [user.username for user in users_going_to_artist])
-    
+            setattr(res[i][0], "friendsgoing", [user.username for user in users_going_to_artist])
+    print(res[0][0].__dict__)
     return render_template('api/fill_personal.html', data=res)
 
 @app.route('/api/change_username', methods=['GET', 'POST'])

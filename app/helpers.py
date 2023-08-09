@@ -24,7 +24,6 @@ def create_group_invite_link(group_id: int):
 def verify_group_invite_token(token: str):
     try:
         data = jwt.decode(token, config.SECRET_KEY, algorithms=["HS256"])
-        print("data", data)
         return data["group_id"]
     except:
         return None

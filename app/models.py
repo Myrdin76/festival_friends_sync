@@ -41,12 +41,9 @@ class User(UserMixin, db.Model):
     artists = db.relationship("Artist", secondary=user_to_artist, backref="artist")
 
     def get_all_artists_ordered(self):
-        res = (
-            db.session.query(Artist)
-            .filter(Artist.artist_id.in_([art.artist_id for art in self.artists]))
-            .order_by(Artist.startdate)
-            .all()
-        )
+        stmt = select(Artist, (func.lead(Artist.startdate).over(order_by=Artist.startdate) - Artist.enddate).label('time_difference'))
+        res = db.session.execute(stmt).all()
+        print(res)
         return res
 
     def get_friends(self, group_id):
