@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import render_template, request, jsonify, redirect, url_for, make_response, flash, session, Markup
 from flask_login import login_required, current_user
 import pandas as pd
@@ -116,10 +118,12 @@ def fill_personal():
         for i in range(0,len(res)):
             # Get the users who are part of the specified group and are going to this artist
             users_going_to_artist = [
-                user for user in users_in_group if res[i] in user.artists
+                user for user in users_in_group if res[i][0] in user.artists
             ]
-            setattr(res[i], "friendsgoing", [user.username for user in users_going_to_artist])
-    
+            setattr(res[i][0], "friendsgoing", [user.username for user in users_going_to_artist])
+            if not res[i][1] is None and res[i][1] < timedelta(0):
+                setattr(res[i][0], "overlap", True)
+                
     return render_template('api/fill_personal.html', data=res)
 
 @app.route('/api/change_username', methods=['GET', 'POST'])
