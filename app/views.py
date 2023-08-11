@@ -80,7 +80,7 @@ def login():
             session.pop('group_invite_token', None)
             return redirect(url_for('accept_invite_link', invite_token=invite_token))
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index')
+            next_page = url_for('personal_timetable')
         return redirect(next_page)
     return render_template('login.html', title=('Sign In'), form=form)
 
