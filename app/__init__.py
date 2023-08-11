@@ -21,7 +21,7 @@ bootstrap = Bootstrap5()
 # csrf._exempt_views.add('dash.dash.dispatch')
 
 lm = LoginManager()
-lm.session_protection = "strong"
+lm.session_protection = None
 lm.login_view = "login"
 lm.login_message_category = "debug"
 
